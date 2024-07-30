@@ -1,15 +1,18 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { isUserLogIn } from "../stores/localStorage/isUserLogIn";
 import { useTaskList } from "../stores/useTaskList";
 import { FaRegTrashAlt, FaPenAlt, FaFire } from "react-icons/fa";
 import { OneTaskType } from "../type";
+import { useFetchTask } from "../api/actions/useFetchTask";
 
 export const TaskItem = () => {
   const taskList = useTaskList((state) => state.userTaskList);
+
   const editIndex = 0;
 
   const taskListMessage = "This is your taskList";
+
+  useFetchTask();
 
   return (
     <div className="pt-12">
@@ -17,8 +20,8 @@ export const TaskItem = () => {
         <>
           <h3 className="pb-5 text-center text-2xl">{taskListMessage} </h3>
           <ul className="flex flex-col gap-1">
-            {taskList.map((oneTask: OneTaskType, index: number) => {
-              const { taskName, isPriority, isDone,  tag } = oneTask;
+            {taskList[0]?.map((oneTask: OneTaskType, index: number) => {
+              const { taskName, isPriority, isDone, tag } = oneTask;
               return (
                 <li
                   key={index}
