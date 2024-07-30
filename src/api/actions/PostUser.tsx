@@ -1,8 +1,8 @@
-import { API_URL } from "../url";
+import { USERS_API_URL } from "../url";
 
-export const PostUser = async ({first}) => {
+export const PostUser = async ({ first }) => {
   try {
-    const response = await fetch(`${API_URL}`, {
+    const response = await fetch(`${USERS_API_URL}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

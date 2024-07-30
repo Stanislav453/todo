@@ -1,19 +1,17 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
-import { API_URL } from "../../api/url";
+import { USERS_API_URL } from "../../api/url";
 import { FormTypeLogIn } from "../../type";
 import { UserType } from "../../type";
 import { CustomButton } from "../CustomButton";
 import { useUserData } from "../../stores/useUserData";
 import { useNavigate } from "react-router-dom";
-import { useTaskList } from "../../stores/useTaskList";
 
 export default function Logins() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const setUser = useUserData((state) => state.updateUserData);
-  const setTaskList = useTaskList((state) => state.updateUserTaskList);
   const navigate = useNavigate();
 
   const emailError = "Invalid email address";
@@ -30,8 +28,10 @@ export default function Logins() {
       email: Yup.string().email(emailError).required(emailRequired),
       password: Yup.string().required(passwordRequired),
     }),
-    onSubmit: async (values, { resetForm }) => {
-      const url = new URL(`${API_URL}users`);
+    onSubmit: async (values, { resetForm, setSubmitting }) => {
+      setSubmitting(false);
+
+      const url = new URL(`${USERS_API_URL}users`);
       url.searchParams.append("email", values.email);
 
       try {
@@ -56,7 +56,6 @@ export default function Logins() {
 
           navigate("/");
           location.reload();
-          setTaskList(data[0].taskList);
         } else {
           setError(incorectFill);
         }

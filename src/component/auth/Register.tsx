@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { CustomButton } from "../CustomButton";
-import { API_URL } from "../../api/url";
+import { USERS_API_URL } from "../../api/url";
 import { FormType } from "../../type";
 
 export default function Register() {
@@ -62,7 +62,7 @@ export default function Register() {
       }
 
       try {
-        const response = await fetch(`${API_URL}users`, {
+        const response = await fetch(`${USERS_API_URL}users`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
