@@ -21,10 +21,13 @@ export type UserType = {
 };
 
 export type OneTaskType = {
+  id: string
   taskName: string;
   isPriority: boolean;
   tag: string;
   isDone: boolean;
+  listName: string;
+  userId: string;
 };
 
 export type IsUserLogInType = {
