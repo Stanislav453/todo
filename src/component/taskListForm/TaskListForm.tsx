@@ -1,27 +1,34 @@
-import { useState } from "react";
-import { registerLocale } from "react-datepicker";
+import { useEffect, useState } from "react";
 import { CustomButton } from "../CustomButton";
 import { OneTaskType } from "../../type";
-import { es } from "date-fns/locale/es";
 import { useTaskList } from "../../stores/useTaskList";
 import { TASKS_API_URL } from "../../api/url";
 import { isUserLogIn } from "../../stores/localStorage/isUserLogIn";
-// import { useTaskList } from "../../stores/useTaskList";
-
-registerLocale("es", es);
 
 export const TaskListForm = () => {
-  // const [editIndex, setEditIndex] = useState<number | null>(null);
   const setTaskList = useTaskList((state) => state.updateTaskList);
+  const taskList = useTaskList((state) => state.userTaskList);
+  const [newId, setNewId] = useState("");
   const [userTask, setUserTask] = useState<OneTaskType>({
-    id: "",
+    id: newId,
+    userId: isUserLogIn.id,
     taskName: "",
     isPriority: false,
     tag: "home",
     isDone: false,
     listName: "listName 2",
-    userId: isUserLogIn.id,
   });
+
+  useEffect(() => {
+    const calcId = () => {
+      const lastId = parseInt(taskList[taskList.length - 1]?.id, 10);
+      const id = lastId + 1;
+      const result = id.toString();
+      setNewId(result);
+    };
+
+    calcId();
+  }, [taskList]);
 
   const formSubmit = async () => {
     setTaskList(userTask);
@@ -33,17 +40,18 @@ export const TaskListForm = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          id: userTask.id,
           taskName: userTask.taskName,
           isPriority: userTask.isPriority,
           tag: userTask.tag,
-          isDone: false,
-          listName: "listName 2",
+          isDone: userTask.isDone,
+          listName: userTask.listName,
           userId: isUserLogIn.id,
         }),
       });
       if (response.ok) {
         setUserTask({
-          id: "",
+          id: newId,
           taskName: "",
           isPriority: false,
           tag: "home",
@@ -51,9 +59,9 @@ export const TaskListForm = () => {
           listName: "listName 2",
           userId: isUserLogIn.id,
         });
-        console.log("huraa");
+        console.log("Task is sent.");
       } else {
-        console.log("noooo");
+        console.log("Task is not sent.");
       }
     } catch (e) {
       console.log(e);
@@ -65,18 +73,11 @@ export const TaskListForm = () => {
   ) => {
     const { name, value, type } = e.target;
 
-    if (e.target instanceof HTMLInputElement) {
-      const checked = e.target.checked;
-      setUserTask({
-        ...userTask,
-        [name]: type === "checkbox" ? checked : value,
-      });
-    } else {
-      setUserTask({
-        ...userTask,
-        [name]: value,
-      });
-    }
+    setUserTask((prevTask) => ({
+      ...prevTask,
+      id: newId,
+      [name]: type === "checkbox" ? e.target.checked : value,
+    }));
   };
 
   return (
@@ -95,9 +96,7 @@ export const TaskListForm = () => {
         <CustomButton
           buttonName="Add task"
           customStyle="bg-formButton"
-          action={() => {
-            formSubmit();
-          }}
+          action={formSubmit}
         />
       </div>
       <div className="flex flex-wrap items-center  w-full gap-1">
