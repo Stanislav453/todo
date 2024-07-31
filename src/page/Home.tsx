@@ -1,8 +1,9 @@
 import React from "react";
-import { TaskListForm } from "../component/taskListForm/TaskListForm";
+import { TaskListForm } from "../component/TaskListForm";
 import { TaskItem } from "../component/TaskItem";
 // import { useTaskList } from "../../stores/useTaskList";
 import { useTaskList } from "../stores/useTaskList";
+import { SideTodoLists } from "../component/SideTodoLists";
 
 export const Home = () => {
   const taskList = useTaskList((state) => state.userTaskList);
@@ -14,6 +15,7 @@ export const Home = () => {
       <h1 className="pb-8 text-[3rem] font-medium text-black text-center">
         Todo list
       </h1>
+      <SideTodoLists />
       <TaskListForm />
       <TaskItem />
     </main>

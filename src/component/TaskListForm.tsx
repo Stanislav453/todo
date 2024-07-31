@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { CustomButton } from "../CustomButton";
-import { OneTaskType } from "../../type";
-import { useTaskList } from "../../stores/useTaskList";
-import { TASKS_API_URL } from "../../api/url";
-import { isUserLogIn } from "../../stores/localStorage/isUserLogIn";
+import { CustomButton } from "./CustomButton";
+import { OneTaskType } from "../type";
+import { useTaskList } from "../stores/useTaskList";
+import { TASKS_API_URL } from "../api/url";
+import { isUserLogIn } from "../stores/localStorage/isUserLogIn";
 
 export const TaskListForm = () => {
   const setTaskList = useTaskList((state) => state.updateTaskList);
-  const taskList = useTaskList((state) => state.userTaskList);
+  const activeTodoList = useTaskList((state) => state.activeTodoList);
+  const taskList = useTaskList((state) => state.filterTodoListData);
   const [newId, setNewId] = useState("");
   const [userTask, setUserTask] = useState<OneTaskType>({
     id: newId,
@@ -16,7 +17,7 @@ export const TaskListForm = () => {
     isPriority: false,
     tag: "home",
     isDone: false,
-    listName: "listName 2",
+    listName: activeTodoList,
   });
 
   useEffect(() => {
@@ -45,7 +46,7 @@ export const TaskListForm = () => {
           isPriority: userTask.isPriority,
           tag: userTask.tag,
           isDone: userTask.isDone,
-          listName: userTask.listName,
+          listName: activeTodoList,
           userId: isUserLogIn.id,
         }),
       });
@@ -56,7 +57,7 @@ export const TaskListForm = () => {
           isPriority: false,
           tag: "home",
           isDone: false,
-          listName: "listName 2",
+          listName: activeTodoList,
           userId: isUserLogIn.id,
         });
         console.log("Task is sent.");

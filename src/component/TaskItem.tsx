@@ -9,8 +9,9 @@ import { useState } from "react";
 // import { useUpdateTask } from "../api/actions/useUpdateTask";
 
 export const TaskItem = () => {
-  const [editIndex, setEditIndex] = useState<string | null>(null); // Change initial value to null
-  const taskList = useTaskList((state) => state.userTaskList);
+  const [editIndex, setEditIndex] = useState<string | null>(null);
+  const taskList = useTaskList((state) => state.filterTodoListData);
+  const activeTodoList = useTaskList((state) => state.activeTodoList);
   const filterTaskList = useTaskList((state) => state.updateFilterTaskList);
   const toggleIsDone = useTaskList((state) => state.toggleTaskDone);
   const editTaskList = useTaskList((state) => state.editTaskList);
@@ -23,8 +24,6 @@ export const TaskItem = () => {
     listName: "listName 2",
     userId: isUserLogIn.id,
   });
-
-  const taskListMessage = "This is your taskList";
 
   useFetchTask();
 
@@ -101,7 +100,6 @@ export const TaskItem = () => {
   };
 
   const editTaskSubmit = async () => {
-
     if (editIndex) {
       editTaskList(editIndex, updateTask);
       setEditIndex(null);
@@ -142,10 +140,17 @@ export const TaskItem = () => {
     <div className="pt-12">
       {isUserLogIn ? (
         <>
-          <h3 className="pb-5 text-center text-2xl">{taskListMessage} </h3>
+          <h3 className="pb-5 text-center text-2xl">
+            This is your taskList
+            {activeTodoList ? (
+              <span className="font-semibold"> {activeTodoList}</span>
+            ) : (
+              <span className="font-semibold"> select your task list</span>
+            )}
+          </h3>
           <ul className="flex flex-col gap-1">
             {taskList.map((oneTask: OneTaskType, index: number) => {
-              const {  id, taskName, isPriority, tag, isDone } = oneTask;
+              const { id, taskName, isPriority, tag, isDone } = oneTask;
               return (
                 <li
                   key={index}
