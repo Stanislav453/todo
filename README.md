@@ -1,7 +1,7 @@
 1. Clone repository
 
    ```bash
-   $ https://github.com/Stanislav453/todo.git
+   $ git clone https://github.com/Stanislav453/todo.git
    $ cd ./todo
    ```
 
@@ -18,5 +18,5 @@
     ```bash
     $ npm start
 
-project run http://localhost:5175/
+project run http://localhost:5173/
 ```
