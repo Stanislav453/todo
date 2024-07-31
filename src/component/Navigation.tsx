@@ -21,13 +21,13 @@ export const Navigation = () => {
 
       {isUserLogIn ? (
         <div className="flex gap-2 items-center">
-          <p className="text-sm ">
-            Hellov <span className="font-semibold">{isUserLogIn.name}</span>
+          <p className="text-sm text-center px-[15px]">
+            Hellov <span className="font-semibold text-center">{isUserLogIn.name}</span>
           </p>
 
           <CustomButton
             buttonName="LogOut"
-            customStyle="bg-logOut"
+            customStyle="bg-logOut rounded-full"
             action={() => logOut()}
           />
         </div>

@@ -1,12 +1,11 @@
 import { Link } from "react-router-dom";
 import { isUserLogIn } from "../stores/localStorage/isUserLogIn";
 import { useTaskList } from "../stores/useTaskList";
-import { FaRegTrashAlt, FaPenAlt, FaFire, FaRegCircle } from "react-icons/fa";
+import { FaRegTrashAlt, FaPenAlt, FaFire, FaCheckCircle } from "react-icons/fa";
 import { OneTaskType } from "../type";
 import { useFetchTask } from "../api/actions/useFetchTask";
 import { USERS_API_URL } from "../api/url";
 import { useState } from "react";
-// import { useUpdateTask } from "../api/actions/useUpdateTask";
 
 export const TaskItem = () => {
   const [editIndex, setEditIndex] = useState<string | null>(null);
@@ -155,17 +154,25 @@ export const TaskItem = () => {
                 <li
                   key={index}
                   className={`flex justify-between w-full p-3 pt-0 rounded-lg 
-                    ${editIndex === id ? "bg-orange-100" : "bg-gray-100"}`}
+                    ${editIndex === id ? "bg-orange-100 pt-3" : "bg-gray-100"}`}
                 >
-                  <div className="flex flex-col items-center w-full w-max-24">
-                    <p className="flex w-full bg-gray-100">
+                  <div
+                    className={`flex flex-col items-center w-full w-max-24 ${
+                      editIndex === id ? "gap-2" : ""
+                    }`}
+                  >
+                    <p
+                      className={`flex w-full ${
+                        editIndex === id ? "bg-orange-100" : "bg-gray-100"
+                      }`}
+                    >
                       {editIndex === id ? (
                         <select
                           id="task-tag"
                           name="tag"
                           onChange={handleChange}
                           value={updateTask.tag}
-                          className="flex-none w-26 p-2 rounded-lg bg-gray-100 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          className="flex-none w-26 p-2 ml-[21px]  rounded-lg bg-gray-100 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         >
                           <option value="home">Home</option>
                           <option value="jobs">Jobs</option>
@@ -179,7 +186,7 @@ export const TaskItem = () => {
                     <div
                       className={`flex gap-2 items-center justify-between w-full ${
                         isDone ? "bg-black" : "bg-gray-100"
-                      }`}
+                      } ${editIndex === id ? "bg-orange-100" : "bg-gray-100"}`}
                     >
                       <div className="flex gap-2">
                         <input
@@ -190,7 +197,7 @@ export const TaskItem = () => {
                         />
                         {editIndex === id ? (
                           <input
-                            className="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-tl-lg rounded-bl-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             type="text"
                             name="taskName"
                             placeholder="Write your task"
@@ -201,7 +208,7 @@ export const TaskItem = () => {
                           <p>{taskName}</p>
                         )}
                         {editIndex === id ? (
-                          <div className="flex gap-1 bg-gray-100 p-1 border-1 rounded-lg">
+                          <div className="flex gap-1 p-1 border-1 rounded-lg items-center	 bg-gray-100">
                             <input
                               type="checkbox"
                               name="isPriority"
@@ -211,20 +218,24 @@ export const TaskItem = () => {
                             <label htmlFor="isPriority">Is priority?</label>
                           </div>
                         ) : (
-                          isPriority && <FaFire className="text-red-500" />
+                          isPriority && (
+                            <div className="flex items-center">
+                              <FaFire className="text-red-500" />
+                            </div>
+                          )
                         )}
                       </div>
                       <div className="flex gap-3">
                         <button onClick={() => deleteTask(id)}>
-                          <FaRegTrashAlt className="text-red-500 text-xl " />
+                          <FaRegTrashAlt className="text-red-500 text-xl text-[1.3rem]" />
                         </button>
                         {editIndex !== id ? (
                           <button onClick={() => editTask(id)}>
-                            <FaPenAlt className="text-orange-500 text-xl" />
+                            <FaPenAlt className="text-orange-500 text-xl text-[1.3rem]" />
                           </button>
                         ) : (
                           <button onClick={() => editTaskSubmit()}>
-                            <FaRegCircle className="text-orange-500 text-xl" />
+                            <FaCheckCircle className="text-orange-500 text-[1.3rem]" />
                           </button>
                         )}
                       </div>

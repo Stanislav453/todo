@@ -1,3 +1,3 @@
-import Logins from "../component/auth/LogIns";
+import LogInForm from "../component/auth/LogInForm";
 
-export const LogIn = () => <Logins />;
+export const LogIn = () => <LogInForm />;

@@ -5,7 +5,7 @@ import { CustomButton } from "../CustomButton";
 import { USERS_API_URL } from "../../api/url";
 import { FormType } from "../../type";
 
-export default function Register() {
+export default function RegisterForm() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 

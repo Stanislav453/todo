@@ -8,7 +8,7 @@ import { CustomButton } from "../CustomButton";
 import { useUserData } from "../../stores/useUserData";
 import { useNavigate } from "react-router-dom";
 
-export default function Logins() {
+export default function LogInForm() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const setUser = useUserData((state) => state.updateUserData);

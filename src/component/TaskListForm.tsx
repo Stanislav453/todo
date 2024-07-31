@@ -23,7 +23,7 @@ export const TaskListForm = () => {
   useEffect(() => {
     const calcId = () => {
       const lastId = parseInt(taskList[taskList.length - 1]?.id, 10);
-      const id = lastId + 1;
+      const id = isNaN(lastId) ? 1 : lastId + 1;
       const result = id.toString();
       setNewId(result);
     };
@@ -101,7 +101,7 @@ export const TaskListForm = () => {
         />
       </div>
       <div className="flex flex-wrap items-center  w-full gap-1">
-        <div className={`flex gap-1 "bg-gray-100 p-1 border-1  rounded-lg `}>
+        <div className={`flex gap-1 bg-gray-100 p-[8px] border-1  rounded-lg `}>
           <input
             type="checkbox"
             name="isPriority"
