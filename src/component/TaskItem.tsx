@@ -1,18 +1,28 @@
 import { Link } from "react-router-dom";
 import { isUserLogIn } from "../stores/localStorage/isUserLogIn";
 import { useTaskList } from "../stores/useTaskList";
-import { FaRegTrashAlt, FaPenAlt, FaFire } from "react-icons/fa";
+import { FaRegTrashAlt, FaPenAlt, FaFire, FaRegCircle } from "react-icons/fa";
 import { OneTaskType } from "../type";
 import { useFetchTask } from "../api/actions/useFetchTask";
 import { USERS_API_URL } from "../api/url";
+import { useState } from "react";
+// import { useUpdateTask } from "../api/actions/useUpdateTask";
 
 export const TaskItem = () => {
-  // const [isEdit, setIsedit]
+  const [editIndex, setEditIndex] = useState<string | null>(null); // Change initial value to null
   const taskList = useTaskList((state) => state.userTaskList);
   const filterTaskList = useTaskList((state) => state.updateFilterTaskList);
-  const toogleIsDone = useTaskList((state) => state.toggleTaskDone);
-
-  const editIndex = 0;
+  const toggleIsDone = useTaskList((state) => state.toggleTaskDone);
+  const editTaskList = useTaskList((state) => state.editTaskList);
+  const [updateTask, setUpdateTask] = useState<Partial<OneTaskType>>({
+    id: "",
+    taskName: "",
+    isPriority: false,
+    tag: "home",
+    isDone: false,
+    listName: "listName 2",
+    userId: isUserLogIn.id,
+  });
 
   const taskListMessage = "This is your taskList";
 
@@ -41,8 +51,7 @@ export const TaskItem = () => {
   };
 
   const handleToggleTaskDone = async (id: string, currentStatus: boolean) => {
-    toogleIsDone(id);
-    console.log(currentStatus);
+    toggleIsDone(id);
 
     try {
       const taskResponse = await fetch(
@@ -63,53 +72,162 @@ export const TaskItem = () => {
       console.error(error);
     }
   };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value, type } = e.target;
+
+    if (e.target instanceof HTMLInputElement) {
+      const checked = e.target.checked;
+      setUpdateTask((prevState) => ({
+        ...prevState,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+    } else {
+      setUpdateTask((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+  };
+
+  const editTask = (id: string) => {
+    setEditIndex(id);
+    const taskToEdit = taskList.find((task) => task.id === id);
+    if (taskToEdit) {
+      setUpdateTask(taskToEdit);
+    }
+  };
+
+  const editTaskSubmit = async () => {
+
+    if (editIndex) {
+      editTaskList(editIndex, updateTask);
+      setEditIndex(null);
+      setUpdateTask({
+        id: "",
+        taskName: "",
+        isPriority: false,
+        tag: "home",
+        isDone: false,
+        listName: "listName 2",
+        userId: isUserLogIn.id,
+      });
+
+      try {
+        const taskResponse = await fetch(
+          `${USERS_API_URL}users/${isUserLogIn.id}/tasks/${editIndex}`,
+          {
+            method: "PUT",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              ...updateTask,
+            }),
+          }
+        );
+
+        if (taskResponse.ok) {
+          console.log("task change");
+        } else {
+          console.log("task not change");
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
   return (
     <div className="pt-12">
       {isUserLogIn ? (
         <>
           <h3 className="pb-5 text-center text-2xl">{taskListMessage} </h3>
           <ul className="flex flex-col gap-1">
-            {Array.isArray(taskList) &&
-              taskList.map((oneTask: OneTaskType, index: number) => {
-                const { id, taskName, isPriority, tag, isDone } = oneTask;
-                return (
-                  <li
-                    key={index}
-                    className={`flex justify-between w-full p-3 pt-0 rounded-lg 
-                    ${editIndex === index ? "bg-orange-100" : "bg-gray-100"}`}
-                  >
-                    <div className="flex flex-col items-center w-full w-max-24">
-                      <p className="flex w-full bg-gray-100">
+            {taskList.map((oneTask: OneTaskType, index: number) => {
+              const {  id, taskName, isPriority, tag, isDone } = oneTask;
+              return (
+                <li
+                  key={index}
+                  className={`flex justify-between w-full p-3 pt-0 rounded-lg 
+                    ${editIndex === id ? "bg-orange-100" : "bg-gray-100"}`}
+                >
+                  <div className="flex flex-col items-center w-full w-max-24">
+                    <p className="flex w-full bg-gray-100">
+                      {editIndex === id ? (
+                        <select
+                          id="task-tag"
+                          name="tag"
+                          onChange={handleChange}
+                          value={updateTask.tag}
+                          className="flex-none w-26 p-2 rounded-lg bg-gray-100 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        >
+                          <option value="home">Home</option>
+                          <option value="jobs">Jobs</option>
+                          <option value="workshop">Workshop</option>
+                          <option value="workout">Workout</option>
+                        </select>
+                      ) : (
                         <span className="text-[10px]">{tag}</span>
-                      </p>
-                      <div
-                        className={`flex gap-2 items-center justify-between w-full ${
-                          isDone ? "bg-black" : "bg-gray-100 "
-                        } `}
-                      >
-                        <div className="flex gap-2">
+                      )}
+                    </p>
+                    <div
+                      className={`flex gap-2 items-center justify-between w-full ${
+                        isDone ? "bg-black" : "bg-gray-100"
+                      }`}
+                    >
+                      <div className="flex gap-2">
+                        <input
+                          name="isDone"
+                          type="checkbox"
+                          checked={isDone}
+                          onChange={() => handleToggleTaskDone(id, isDone)}
+                        />
+                        {editIndex === id ? (
                           <input
-                            name="isDone"
-                            type="checkbox"
-                            checked={isDone}
-                            onChange={() => handleToggleTaskDone(id, isDone)}
+                            className="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-tl-lg rounded-bl-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            type="text"
+                            name="taskName"
+                            placeholder="Write your task"
+                            onChange={handleChange}
+                            value={updateTask.taskName}
                           />
+                        ) : (
                           <p>{taskName}</p>
-                          {isPriority && <FaFire className="text-red-500" />}
-                        </div>
-                        <div className="flex gap-3">
-                          <button onClick={() => deleteTask(id)}>
-                            <FaRegTrashAlt className="text-red-500 text-xl " />
-                          </button>
-                          <button>
+                        )}
+                        {editIndex === id ? (
+                          <div className="flex gap-1 bg-gray-100 p-1 border-1 rounded-lg">
+                            <input
+                              type="checkbox"
+                              name="isPriority"
+                              onChange={handleChange}
+                              checked={updateTask.isPriority}
+                            />
+                            <label htmlFor="isPriority">Is priority?</label>
+                          </div>
+                        ) : (
+                          isPriority && <FaFire className="text-red-500" />
+                        )}
+                      </div>
+                      <div className="flex gap-3">
+                        <button onClick={() => deleteTask(id)}>
+                          <FaRegTrashAlt className="text-red-500 text-xl " />
+                        </button>
+                        {editIndex !== id ? (
+                          <button onClick={() => editTask(id)}>
                             <FaPenAlt className="text-orange-500 text-xl" />
                           </button>
-                        </div>
+                        ) : (
+                          <button onClick={() => editTaskSubmit()}>
+                            <FaRegCircle className="text-orange-500 text-xl" />
+                          </button>
+                        )}
                       </div>
                     </div>
-                  </li>
-                );
-              })}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </>
       ) : (
